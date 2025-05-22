@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date 
 
@@ -75,6 +75,9 @@ def delete_habit(habit_id):
     db.session.commit()
     return jsonify({'message': 'Habit deleted successfully'})
 
+@app.route('/')
+def index():
+    return render_template('habittemplate.html')
 
 if __name__ == '__main__':
     with app.app_context():

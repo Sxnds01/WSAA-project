@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <title>Habit Tracker</title>
+    <link rel = "stylesheet" href = "{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Daily Habit Tracker</h1>
+
+    <form id="habit-form" onsubmit="addHabit(event)">
+        <input type="text" id="habitName" placeholder="Habit name"required>
+        <input type="date" id="habitDate" required>
+        <button type="submit">Add Habit</button>
+    </form>
+
+    <ul id="habit-list" class="list-group"></ul>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', fetchHabits);
+
+  function fetchHabits() {
+    fetch('/api/habits')
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById('habit-list');
+        list.innerHTML = ''; // Clear existing list
+        data.forEach(habit => {
+          const item = document.createElement('li');
+          item.innerHTML = `
+            <strong>${habit.name}</strong> – ${habit.date} – ${habit.completed ? '✅' : '❌'}
+            <button onclick="deleteHabit(${habit.id})">Delete</button>
+            <button onclick="toggleComplete(${habit.id}, ${habit.completed})">Toggle</button>
+          `;
+          list.appendChild(item);
+        });
+      });
+  }
+
+  function addHabit(event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    const date = document.getElementById('date').value;
+
+    fetch('/api/habits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, date, completed: false })
+    })
+    .then(() => {
+      fetchHabits();
+      document.getElementById('habit-form').reset();
+    });
+  }
+
+  function deleteHabit(id) {
+    fetch(`/api/habits/${id}`, {
+      method: 'DELETE'
+    }).then(fetchHabits);
+  }
+
+  function toggleComplete(id, currentStatus) {
+    fetch(`/api/habits/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed: !currentStatus })
+    }).then(fetchHabits);
+  }
+</script>
+
+
+</body>
+</html>
