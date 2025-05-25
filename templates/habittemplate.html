@@ -38,11 +38,6 @@
       });
   }
 
-  function addHabit(event) {
-    event.preventDefault();
-    const name = document.getElementById('name').value;
-    const date = document.getElementById('date').value;
-
     fetch('/api/habits', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,7 +47,7 @@
       fetchHabits();
       document.getElementById('habit-form').reset();
     });
-  }
+  
 
   function deleteHabit(id) {
     fetch(`/api/habits/${id}`, {
@@ -68,6 +63,8 @@
     }).then(fetchHabits);
   }
 </script>
+
+<script src="{{ url_for('static', filename='main.js') }}"></script>
 
 
 </body>
